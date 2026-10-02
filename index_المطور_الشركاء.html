@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17365D">
+<title>محاسبة الشريكين</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6f9;font-family:Tahoma,Arial,sans-serif;color:#17202a}
+header{background:#17365D;color:#fff;padding:20px 16px 18px;border-radius:0 0 22px 22px}header h1{margin:0;font-size:22px}header p{margin:7px 0 0;opacity:.85;font-size:13px}
+main{padding:14px;max-width:700px;margin:auto}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:-5px}.card{background:#fff;border-radius:16px;padding:15px;box-shadow:0 2px 10px #00000010}.card small{color:#6b7280}.card strong{display:block;font-size:19px;margin-top:8px}.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:15px 0}
+button,.btn{border:0;border-radius:14px;padding:14px;font-size:15px;font-weight:bold;cursor:pointer}.action{background:#fff;box-shadow:0 2px 9px #00000010;color:#17365D}.primary{background:#17365D;color:#fff}.danger{background:#fce4e4;color:#a61b1b}
+section{display:none}.active{display:block}.back{margin:8px 0;background:#e8eef5;color:#17365D}form{background:#fff;padding:15px;border-radius:16px;box-shadow:0 2px 10px #0000000d}label{display:block;font-size:13px;color:#59636e;margin:11px 0 5px}input,select{width:100%;padding:12px;border:1px solid #d7dde5;border-radius:10px;font-size:15px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.list{margin-top:12px}.item{background:#fff;padding:13px;border-radius:13px;margin:8px 0;box-shadow:0 1px 7px #0000000b}.item b{color:#17365D}.muted{color:#707983;font-size:12px}.total{font-weight:bold;font-size:18px}nav{position:sticky;bottom:8px;background:#17365D;color:white;border-radius:18px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:18px}nav button{background:transparent;color:white;font-size:12px;padding:9px 4px}table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}th,td{padding:9px;border-bottom:1px solid #eee;text-align:right;font-size:12px}th{background:#e8eef5}.note{background:#fff7db;padding:12px;border-radius:12px;font-size:13px;margin:10px 0}.profit{color:#176b35}.loss{color:#a61b1b}.smallbtn{padding:9px 11px;font-size:12px;margin-top:8px}
+</style>
+</head>
+<body>
+<header><h1>📊 محاسبة الشريكين</h1><p>المبيعات • المشتريات • المخزون • الديون • الأرباح • تسوية الشركاء</p></header>
+<main>
+<section id="home" class="active">
+<div class="cards">
+<div class="card"><small>إجمالي المبيعات</small><strong id="salesTotal">0</strong></div>
+<div class="card"><small>الربح / الخسارة الصافية</small><strong id="netProfit">0</strong></div>
+<div class="card"><small>قيمة المخزون</small><strong id="stockValue">0</strong></div>
+<div class="card"><small>ديون العملاء</small><strong id="customerDebt">0</strong></div>
+</div>
+<div class="actions">
+<button class="action" onclick="show('sale')">💰 إضافة بيع</button><button class="action" onclick="show('purchase')">🛒 إضافة شراء</button><button class="action" onclick="show('product')">📦 إضافة صنف</button><button class="action" onclick="show('expense')">🚗 إضافة مصروف</button><button class="action" onclick="show('debts')">💳 الديون</button><button class="action" onclick="show('partners')">👥 الشركاء والأرباح</button><button class="action" onclick="show('inventory')">📦 المخزون</button><button class="action" onclick="show('settings')">⚙️ الإعدادات</button>
+</div>
+<div class="note">كل البيانات تُحفظ محليًا على هذا الهاتف. استخدم النسخ الاحتياطي دوريًا. الأرباح والخسائر تُقسم 50% / 50% بين الشريكين.</div>
+</section>
+
+<section id="product"><button class="back" onclick="show('home')">← الرئيسية</button><h2>إضافة صنف</h2><form onsubmit="addProduct(event)"><label>كود الصنف</label><input id="pc" required placeholder="مثال P001"><label>اسم الصنف</label><input id="pn" required placeholder="مثال Samsung S23"><div class="row"><div><label>سعر البيع</label><input id="ps" type="number" min="0" value="0"></div><div><label>الحد الأدنى</label><input id="pm" type="number" min="0" value="1"></div></div><button class="primary" style="width:100%;margin-top:14px">حفظ الصنف</button></form><div id="productsList" class="list"></div></section>
+
+<section id="purchase"><button class="back" onclick="show('home')">← الرئيسية</button><h2>إضافة شراء</h2><form onsubmit="addPurchase(event)"><label>الصنف</label><select id="buyProduct" required></select><div class="row"><div><label>الكمية</label><input id="bq" type="number" min="1" value="1" required></div><div><label>سعر الوحدة</label><input id="bc" type="number" min="0" value="0" required></div></div><div class="row"><div><label>المواصلات</label><input id="bt" type="number" min="0" value="0"></div><div><label>المدفوع</label><input id="bp" type="number" min="0" value="0"></div></div><label>المورد</label><input id="bs" placeholder="اسم المورد"><button class="primary" style="width:100%;margin-top:14px">حفظ الشراء</button></form></section>
+
+<section id="sale"><button class="back" onclick="show('home')">← الرئيسية</button><h2>إضافة بيع</h2><form onsubmit="addSale(event)"><label>الصنف</label><select id="saleProduct" required></select><div class="row"><div><label>الكمية</label><input id="sq" type="number" min="1" value="1" required></div><div><label>سعر البيع للوحدة</label><input id="sp" type="number" min="0" value="0" required></div></div><div class="row"><div><label>نسبة الدكتور %</label><input id="doc" type="number" min="0" value="0"></div><div><label>مواصلات العملية</label><input id="st" type="number" min="0" value="0"></div></div><div class="row"><div><label>المقبوض</label><input id="sr" type="number" min="0" value="0"></div><div><label>العميل</label><input id="sc" placeholder="اسم العميل"></div></div><button class="primary" style="width:100%;margin-top:14px">حفظ البيع</button></form></section>
+
+<section id="expense"><button class="back" onclick="show('home')">← الرئيسية</button><h2>إضافة مصروف</h2><form onsubmit="addExpense(event)"><label>نوع المصروف</label><input id="et" placeholder="إيجار / هاتف / نقل عام..."><label>الوصف</label><input id="ed" placeholder="تفاصيل"><label>المبلغ</label><input id="ea" type="number" min="0" required value="0"><button class="primary" style="width:100%;margin-top:14px">حفظ المصروف</button></form></section>
+
+<section id="inventory"><button class="back" onclick="show('home')">← الرئيسية</button><h2>المخزون</h2><div id="inventoryList"></div></section>
+<section id="debts"><button class="back" onclick="show('home')">← الرئيسية</button><h2>ديون العملاء</h2><div id="debtList"></div></section>
+
+<section id="partners"><button class="back" onclick="show('home')">← الرئيسية</button><h2>الشركاء والأرباح والخسائر</h2><div id="partnerBox"></div><h3>إضافة مديونية على شريك</h3><form onsubmit="addPartnerDebt(event)"><label>الشريك</label><select id="debtPartner" required></select><label>المبلغ</label><input id="debtAmount" type="number" min="0" required value="0"><label>سبب المديونية</label><input id="debtReason" placeholder="سحب شخصي / مبلغ مستحق / غيره"><button class="primary" style="width:100%;margin-top:14px">إضافة المديونية</button></form><div id="partnerDebtsList" class="list"></div><h3>تفصيل ربح/خسارة كل عملية بيع</h3><div id="salesAnalysis"></div></section>
+
+<section id="settings"><button class="back" onclick="show('home')">← الرئيسية</button><h2>الإعدادات</h2><form onsubmit="saveSettings(event)"><label>اسم الشريك الأول</label><input id="p1"><label>اسم الشريك الثاني</label><input id="p2"><label>نسبة الدكتور الافتراضية %</label><input id="dr" type="number" min="0" max="100"><button class="primary" style="width:100%;margin-top:14px">حفظ الإعدادات</button></form><div class="note">تقسيم الأرباح والخسائر ثابت بالتساوي: <b>50% للشريك الأول + 50% للشريك الثاني</b>.</div></section>
+
+<nav><button onclick="show('home')">🏠 الرئيسية</button><button onclick="show('sale')">💰 بيع</button><button onclick="show('purchase')">🛒 شراء</button><button onclick="show('inventory')">📦 مخزون</button></nav>
+</main>
+<script>
+const K='partners_accounting_v1';
+let db=JSON.parse(localStorage.getItem(K)||'null')||{products:[],purchases:[],sales:[],expenses:[],partnerDebts:[],partnerSettlements:[],settings:{p1:'الشريك الأول',r1:50,p2:'الشريك الثاني',r2:50,dr:10}};
+db.products??=[];db.purchases??=[];db.sales??=[];db.expenses??=[];db.partnerDebts??=[];db.partnerSettlements??=[];db.settings??={p1:'الشريك الأول',r1:50,p2:'الشريك الثاني',r2:50,dr:10};db.settings.r1=50;db.settings.r2=50;db.settledProfit??=0;db.settledProfit=Math.max(0,+db.settledProfit||0);
+function save(){localStorage.setItem(K,JSON.stringify(db));refresh()}
+const money=n=>new Intl.NumberFormat('ar-YE',{maximumFractionDigits:0}).format(n||0);
+function show(id){document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');refresh()}
+function addProduct(e){e.preventDefault();if(db.products.some(x=>x.code===pc.value.trim()))return alert('الكود موجود مسبقًا');db.products.push({code:pc.value.trim(),name:pn.value.trim(),sell:+ps.value,min:+pm.value});e.target.reset();save();show('product')}
+function addPurchase(e){e.preventDefault();db.purchases.push({product:buyProduct.value,q:+bq.value,c:+bc.value,transport:+bt.value,pay:+bp.value,supplier:bs.value,date:Date.now()});e.target.reset();save();alert('تم حفظ الشراء');show('home')}
+// متوسط التكلفة يشمل نصيب الصنف من مواصلات الشراء حتى لا تُحسب المواصلات مرتين.
+function avgCost(code){let a=db.purchases.filter(x=>x.product===code),q=a.reduce((s,x)=>s+x.q,0),v=a.reduce((s,x)=>s+x.q*x.c+x.transport,0);return q?v/q:0}
+function stock(code){return db.purchases.filter(x=>x.product===code).reduce((s,x)=>s+x.q,0)-db.sales.filter(x=>x.product===code).reduce((s,x)=>s+x.q,0)}
+function saleProfit(x){let revenue=x.q*x.price,cost=x.q*(x.cost??avgCost(x.product)),doctor=revenue*(x.doc||0)/100,transport=x.transport||0;return revenue-cost-doctor-transport}
+function addSale(e){e.preventDefault();let code=saleProduct.value,q=+sq.value;if(stock(code)<q)return alert('الكمية غير متوفرة في المخزون');db.sales.push({product:code,q,price:+sp.value,doc:+doc.value||db.settings.dr,transport:+st.value,received:+sr.value,customer:sc.value,date:Date.now(),cost:avgCost(code)});e.target.reset();save();alert('تم حفظ البيع');show('home')}
+function addExpense(e){e.preventDefault();db.expenses.push({type:et.value,desc:ed.value,amount:+ea.value,date:Date.now()});e.target.reset();save();alert('تم حفظ المصروف');show('home')}
+function saveSettings(e){e.preventDefault();db.settings={p1:document.getElementById('p1').value||'الشريك الأول',r1:50,p2:document.getElementById('p2').value||'الشريك الثاني',r2:50,dr:+document.getElementById('dr').value||0};save();alert('تم الحفظ — تقسيم الأرباح والخسائر 50% / 50%')}
+function addPartnerDebt(e){e.preventDefault();let partner=debtPartner.value,amount=+debtAmount.value;if(!partner||amount<=0)return;db.partnerDebts.push({partner,amount,reason:debtReason.value,date:Date.now()});e.target.reset();save();alert('تمت إضافة مديونية الشريك');show('partners')}
+function partnerDebtTotal(partner){return db.partnerDebts.filter(x=>x.partner===partner).reduce((s,x)=>s+x.amount,0)}
+function refresh(){
+let salesTotalN=db.sales.reduce((s,x)=>s+x.q*x.price,0);salesTotal.textContent=money(salesTotalN);
+let gross=db.sales.reduce((s,x)=>s+x.q*(x.price-x.cost),0),doctor=db.sales.reduce((s,x)=>s+x.q*x.price*(x.doc||0)/100,0),saleTransport=db.sales.reduce((s,x)=>s+(x.transport||0),0),exp=db.expenses.reduce((s,x)=>s+x.amount,0);
+let net=gross-doctor-saleTransport-exp;netProfit.textContent=money(net);
+let sv=db.products.reduce((s,p)=>s+stock(p.code)*avgCost(p.code),0);stockValue.textContent=money(sv);
+customerDebt.textContent=money(db.sales.reduce((s,x)=>s+Math.max(0,x.q*x.price-x.received),0));
+let opts='<option value="">اختر الصنف</option>'+db.products.map(p=>`<option value="${p.code}">${p.code} — ${p.name}</option>`).join('');buyProduct.innerHTML=saleProduct.innerHTML=opts;
+productsList.innerHTML=db.products.map(p=>`<div class="item"><b>${p.name}</b><div class="muted">${p.code}</div><div>الرصيد: <b>${stock(p.code)}</b> | متوسط التكلفة شامل النقل: ${money(avgCost(p.code))}</div></div>`).join('');
+inventoryList.innerHTML=db.products.map(p=>{let q=stock(p.code);return `<div class="item"><b>${p.name}</b><div>الرصيد: ${q} | القيمة: ${money(q*avgCost(p.code))}</div><div class="muted">${q<=0?'مستنفد':q<=p.min?'منخفض':'متوفر'}</div></div>`}).join('');
+debtList.innerHTML=db.sales.filter(x=>x.q*x.price>x.received).map(x=>{let p=db.products.find(p=>p.code===x.product);return `<div class="item"><b>${p?.name||x.product}</b><div>العميل: ${x.customer||'غير محدد'}</div><div class="total">المتبقي: ${money(x.q*x.price-x.received)}</div></div>`}).join('')||'<div class="note">لا توجد ديون عملاء مسجلة.</div>';
+let partner1=db.settings.p1,partner2=db.settings.p2,r1v=50,r2v=50;
+let availableProfit=Math.max(0,net-db.settledProfit),share1=net/2,share2=net/2,d1=partnerDebtTotal(partner1),d2=partnerDebtTotal(partner2);
+let availableShare1=availableProfit/2,availableShare2=availableProfit/2;
+let ded1=Math.min(d1,availableShare1),ded2=Math.min(d2,availableShare2);
+let due1=availableShare1-ded1,due2=availableShare2-ded2;
+partnerBox.innerHTML=`<div class="cards"><div class="card"><small>الربح/الخسارة الصافية</small><strong class="${net<0?'loss':'profit'}">${money(net)}</strong></div><div class="card"><small>تقسيم الشركاء</small><strong>50% / 50%</strong></div></div>
+<div class="item"><b>${partner1}</b><div>النسبة: <b>50%</b></div><div>نصيبه من صافي الربح/الخسارة: <b class="${share1<0?'loss':'profit'}">${money(share1)}</b></div><div>الربح المتاح للتسوية الآن: <b>${money(availableShare1)}</b></div><div>المديونية الحالية: <b>${money(d1)}</b></div><div>المخصوم من الربح: <b>${money(ded1)}</b></div><div>المستحق له بعد الخصم: <b>${money(due1)}</b></div></div>
+<div class="item"><b>${partner2}</b><div>النسبة: <b>50%</b></div><div>نصيبه من صافي الربح/الخسارة: <b class="${share2<0?'loss':'profit'}">${money(share2)}</b></div><div>الربح المتاح للتسوية الآن: <b>${money(availableShare2)}</b></div><div>المديونية الحالية: <b>${money(d2)}</b></div><div>المخصوم من الربح: <b>${money(ded2)}</b></div><div>المستحق له بعد الخصم: <b>${money(due2)}</b></div></div>
+<div class="note">الأرباح والخسائر 50% / 50%. لا تُخصم المديونية إلا من الربح المتاح غير المسوّى، وتبقى بقية المديونية للربح التالي.</div><div class="item"><b>الربح الذي تمت تسويته سابقًا</b><div>${money(db.settledProfit)}</div><div class="muted">لا يُعاد خصمه عند فتح شاشة الشركاء مرة أخرى.</div></div>
+<button class="primary" style="width:100%;margin-top:8px" onclick="settleCurrentProfit()">تسوية الربح الحالي وخصم المديونية</button>`;
+debtPartner.innerHTML=`<option value="${partner1}">${partner1}</option><option value="${partner2}">${partner2}</option>`;
+partnerDebtsList.innerHTML=db.partnerDebts.map((d,i)=>`<div class="item"><b>${d.partner}</b><div>المديونية: ${money(d.amount)}</div><div class="muted">${d.reason||'بدون وصف'}</div><button class="danger smallbtn" onclick="removePartnerDebt(${i})">حذف هذا القيد</button></div>`).join('')||'<div class="note">لا توجد مديونيات مسجلة على الشركاء.</div>';
+salesAnalysis.innerHTML=db.sales.map(x=>{let p=db.products.find(p=>p.code===x.product),pr=saleProfit(x),share1Sale=pr/2,share2Sale=pr/2;return `<div class="item"><b>${p?.name||x.product}</b><div>المبيعات: ${money(x.q*x.price)} | التكلفة: ${money(x.q*x.cost)}</div><div>عمولة الدكتور: ${money(x.q*x.price*(x.doc||0)/100)} | مواصلات البيع: ${money(x.transport||0)}</div><div class="total ${pr<0?'loss':'profit'}">${pr<0?'خسارة':'ربح'} العملية: ${money(pr)}</div><div>${partner1}: ${money(share1Sale)} | ${partner2}: ${money(share2Sale)}</div></div>`}).join('')||'<div class="note">لا توجد مبيعات بعد.</div>';
+document.getElementById('p1').value=partner1;document.getElementById('p2').value=partner2;document.getElementById('dr').value=db.settings.dr;
+}
+function settleCurrentProfit(){
+let gross=db.sales.reduce((s,x)=>s+x.q*(x.price-x.cost),0),doctor=db.sales.reduce((s,x)=>s+x.q*x.price*(x.doc||0)/100,0),saleTransport=db.sales.reduce((s,x)=>s+(x.transport||0),0),exp=db.expenses.reduce((s,x)=>s+x.amount,0);
+let net=gross-doctor-saleTransport-exp;
+if(net<=0)return alert('لا توجد أرباح موجبة للتسوية. الخسارة تُقسم 50% / 50% ولا تُخصم من مديونية الشركاء.');
+let available=Math.max(0,net-db.settledProfit);
+if(available<=0)return alert('تمت تسوية الربح المتاح حاليًا بالفعل. أي أرباح جديدة ستظهر تلقائيًا في التسوية القادمة.');
+let s1=available/2,s2=available/2,p1n=db.settings.p1,p2n=db.settings.p2;
+let d1=partnerDebtTotal(p1n),d2=partnerDebtTotal(p2n),pay1=Math.min(d1,s1),pay2=Math.min(d2,s2);
+// خصم المديونية من أرباح الشريك بالتدريج من أقدم القيود أولًا.
+let remain1=pay1;
+db.partnerDebts.forEach(d=>{if(d.partner===p1n&&remain1>0){let x=Math.min(d.amount,remain1);d.amount-=x;remain1-=x;}});
+let remain2=pay2;
+db.partnerDebts.forEach(d=>{if(d.partner===p2n&&remain2>0){let x=Math.min(d.amount,remain2);d.amount-=x;remain2-=x;}});
+db.partnerDebts=db.partnerDebts.filter(d=>d.amount>0);
+db.settledProfit+=available;
+db.partnerSettlements.push({date:Date.now(),profitPeriod:available,partner1:p1n,partner2:p2n,partner1Share:s1,partner2Share:s2,partner1DebtDeducted:pay1,partner2DebtDeducted:pay2});
+save();alert('تمت تسوية الربح المتاح وخصم المديونية تدريجيًا من نصيب كل شريك.');show('partners');
+}
+function removePartnerDebt(i){if(!confirm('حذف قيد المديونية؟'))return;db.partnerDebts.splice(i,1);save();show('partners')}
+refresh();if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body></html>
