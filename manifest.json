@@ -1,11 +1,1 @@
-{
-  "name": "محاسبة الشريكين",
-  "short_name": "المحاسبة",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f4f6f9",
-  "theme_color": "#17365D",
-  "lang": "ar",
-  "dir": "rtl",
-  "icons": []
-}
+{"name":"شركة السامي فارما","short_name":"السامي فارما","start_url":"./","display":"standalone","background_color":"#f4f6f9","theme_color":"#17365D","lang":"ar","dir":"rtl","icons":[]}
